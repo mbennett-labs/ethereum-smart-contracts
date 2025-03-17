@@ -3,11 +3,10 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract PortfolioNFT is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    // Simple counter for token IDs
+    uint256 private _nextTokenId;
     
     // Max supply of NFTs
     uint256 public constant MAX_SUPPLY = 1000;
@@ -23,7 +22,7 @@ contract PortfolioNFT is ERC721URIStorage, Ownable {
     }
     
     function mintNFT(address recipient, string memory tokenURI) public payable returns (uint256) {
-        uint256 newItemId = _tokenIds.current();
+        uint256 newItemId = _nextTokenId;
         
         require(newItemId < MAX_SUPPLY, "Max supply reached");
         
@@ -31,7 +30,7 @@ contract PortfolioNFT is ERC721URIStorage, Ownable {
             require(msg.value >= mintPrice, "Insufficient payment");
         }
         
-        _tokenIds.increment();
+        _nextTokenId++;
         _safeMint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
         
