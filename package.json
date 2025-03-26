@@ -1,23 +1,45 @@
 {
   "name": "ethereum-portfolio",
   "version": "1.0.0",
+  "description": "A collection of Ethereum smart contracts showcasing token implementation, NFT creation, and DeFi mechanics",
   "main": "index.js",
   "directories": {
     "doc": "docs",
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy-token.js --network localhost && hardhat run scripts/deploy-nft.js --network localhost",
+    "deploy:token": "hardhat run scripts/deploy-token.js",
+    "deploy:nft": "hardhat run scripts/deploy-nft.js",
+    "clean": "hardhat clean",
+    "console": "hardhat console",
+    "lint": "npx solhint 'contracts/**/*.sol'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "ethereum",
+    "smart-contracts",
+    "nft",
+    "erc20",
+    "erc721",
+    "defi",
+    "blockchain",
+    "solidity",
+    "hardhat"
+  ],
+  "author": "Michael Bennett",
+  "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "hardhat": "^2.22.19"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbennett-labs/ethereum-smart-contracts.git"
   }
 }
