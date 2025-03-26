@@ -1,38 +1,33 @@
-# Smart Contract Interaction
+# Smart Contract Interaction Guide
 
-This document demonstrates how to interact with the smart contracts in this repository.
+This document demonstrates how to interact with the smart contracts in this repository using various tools and methods.
 
-## NFT Minting Process
-
-The following steps illustrate how to mint an NFT using the PortfolioNFT contract:
-
-1. **Deploy the Contract**
-   - Select appropriate environment
-   - Deploy with constructor parameters if needed
-
-2. **Mint a New NFT**
-   - Provide recipient address
-   - Provide token URI (metadata location)
-   - Execute the transaction
-   
-   ![NFT Minting Process](images/remix-nft-minting.svg)
-
-3. **Transaction Results**
-   - The transaction emits Transfer and MetadataUpdate events
-   - Token ID is returned from the function
-   - Contract state is updated to reflect ownership
-
-# Interacting with Portfolio Smart Contracts
-
-This guide demonstrates how to interact with the smart contracts in this repository using various tools and methods.
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [PortfolioToken (ERC-20) Interactions](#interacting-with-portfoliotoken-erc-20)
+  - [Using Hardhat Console](#using-hardhat-console)
+  - [Using Ethers.js in a Frontend Application](#using-ethersjs-in-a-frontend-application)
+  - [Token Staking Rewards](#token-staking-rewards)
+- [PortfolioNFT (ERC-721) Interactions](#interacting-with-portfolionft-erc-721)
+  - [NFT Minting Process](#nft-minting-process)
+  - [Using Hardhat Console](#using-hardhat-console-1)
+  - [Using Ethers.js in a Frontend Application](#using-ethersjs-in-a-frontend-application-1)
+  - [NFT Metadata Schema](#nft-metadata-schema)
+- [Remix IDE Interactions](#interacting-via-remix-ide)
+- [Conclusion](#conclusion)
 
 ## Prerequisites
 
+Before interacting with the smart contracts, ensure you have:
+
 - Node.js and npm installed
-- Hardhat development environment set up
+- Hardhat development environment set up (`npm install --save-dev hardhat`)
 - MetaMask or another Web3 wallet (for live network interactions)
+- Project dependencies installed (`npm install`)
 
 ## Interacting with PortfolioToken (ERC-20)
+
+The PortfolioToken is an ERC-20 compliant token with additional staking functionality.
 
 ### Using Hardhat Console
 
@@ -79,7 +74,7 @@ This guide demonstrates how to interact with the smart contracts in this reposit
    console.log(`Address 1 staked balance: ${stakedBalance.toString()}`);
    ```
 
-### Using Web3.js/Ethers.js in a Frontend Application
+### Using Ethers.js in a Frontend Application
 
 ```javascript
 // Example using ethers.js
@@ -116,26 +111,73 @@ async function connectToToken() {
 }
 ```
 
+### Token Staking Rewards
+
+The PortfolioToken contract implements a simplified staking mechanism where users earn rewards based on the duration of staking. The reward calculation uses a 5% APY model.
+
+To use staking:
+
+1. Call the `stake(uint256 amount)` function with the amount of tokens to stake
+2. When ready to claim rewards, call the `unstake()` function
+3. The contract will return your staked tokens plus any earned rewards
+
+```javascript
+// Staking example using ethers.js
+async function stakeTokens() {
+  const amount = ethers.utils.parseUnits("100", 18); // 100 tokens
+  
+  // Approve the contract to spend tokens (required before staking)
+  await tokenContract.approve(tokenContract.address, amount);
+  
+  // Stake the tokens
+  const stakeTx = await tokenContract.stake(amount);
+  await stakeTx.wait();
+  console.log("Tokens staked successfully!");
+  
+  // Later, unstake tokens and claim rewards
+  const unstakeTx = await tokenContract.unstake();
+  await unstakeTx.wait();
+  console.log("Tokens unstaked with rewards!");
+}
+```
+
 ## Interacting with PortfolioNFT (ERC-721)
+
+The PortfolioNFT is an ERC-721 compliant NFT contract with minting functionality.
+
+### NFT Minting Process
+
+The following steps illustrate how to mint an NFT using the PortfolioNFT contract:
+
+1. **Deploy the Contract**
+   - Select appropriate environment
+   - Deploy with constructor parameters if needed
+
+2. **Mint a New NFT**
+   - Provide recipient address
+   - Provide token URI (metadata location)
+   - Execute the transaction
+   
+   ![NFT Minting Process](images/remix-nft-minting.svg)
+
+3. **Transaction Results**
+   - The transaction emits Transfer and MetadataUpdate events
+   - Token ID is returned from the function
+   - Contract state is updated to reflect ownership
 
 ### Using Hardhat Console
 
-1. Start a local Hardhat node:
-   ```bash
-   npx hardhat node
-   ```
-
-2. Deploy the NFT contract:
+1. Deploy the NFT contract:
    ```bash
    npx hardhat run scripts/deploy-nft.js --network localhost
    ```
 
-3. Connect to the console:
+2. Connect to the console:
    ```bash
    npx hardhat console --network localhost
    ```
 
-4. Interact with the deployed contract:
+3. Interact with the deployed contract:
    ```javascript
    // Get the contract
    const PortfolioNFT = await ethers.getContractFactory("PortfolioNFT");
@@ -172,7 +214,7 @@ async function connectToToken() {
    console.log(`Token 1 URI: ${tokenURI}`);
    ```
 
-### Using Web3.js/Ethers.js in a Frontend Application
+### Using Ethers.js in a Frontend Application
 
 ```javascript
 // Example using ethers.js
@@ -221,25 +263,7 @@ async function mintNFT() {
 }
 ```
 
-## Interacting via Remix IDE
-
-You can also interact with your contracts using Remix IDE:
-
-1. Open Remix IDE: https://remix.ethereum.org/
-2. Create new files for each contract and paste in the source code
-3. Compile the contracts using Solidity Compiler tab
-4. Deploy using the Deploy & Run Transactions tab
-   - Connect to a local development node or testnet using "Injected Provider - MetaMask"
-   - Or use the JavaScript VM for quick testing
-5. Interact with the deployed contracts using the auto-generated UI
-
-![Remix Deployment Interface](images/remix-deploy.png)
-
-After deploying, you'll see the contract functions available for interaction:
-
-![Remix Interaction](images/remix-transaction.png)
-
-## NFT Metadata Schema
+### NFT Metadata Schema
 
 When minting NFTs, you should follow this metadata schema:
 
@@ -261,16 +285,26 @@ When minting NFTs, you should follow this metadata schema:
 }
 ```
 
-## Token Staking Rewards
+## Interacting via Remix IDE
 
-The PortfolioToken contract implements a simplified staking mechanism where users earn rewards based on the duration of staking. The reward calculation uses a 5% APY model.
+You can also interact with your contracts using Remix IDE:
 
-To use staking:
+1. Open [Remix IDE](https://remix.ethereum.org/)
+2. Create new files for each contract and paste in the source code
+3. Compile the contracts using Solidity Compiler tab
+4. Deploy using the Deploy & Run Transactions tab
+   - Connect to a local development node or testnet using "Injected Provider - MetaMask"
+   - Or use the JavaScript VM for quick testing
+5. Interact with the deployed contracts using the auto-generated UI
 
-1. Call the `stake(uint256 amount)` function with the amount of tokens to stake
-2. When ready to claim rewards, call the `unstake()` function
-3. The contract will return your staked tokens plus any earned rewards
+![Remix Deployment Interface](images/remix-deploy.png)
+
+After deploying, you'll see the contract functions available for interaction:
+
+![Remix Interaction](images/remix-transaction.png)
 
 ## Conclusion
 
-These examples demonstrate basic interactions with the smart contracts. For advanced usage and integration with a complete dApp frontend, consider extending these examples with error handling, event listening, and user interface components.
+These examples demonstrate basic interactions with the smart contracts in this repository. For advanced usage and integration with a complete dApp frontend, consider extending these examples with error handling, event listening, and user interface components.
+
+For any questions or issues, please open an issue in the GitHub repository.
