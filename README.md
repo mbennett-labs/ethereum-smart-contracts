@@ -29,6 +29,20 @@ An ERC-20 token with additional functionality:
 - Staking mechanism with time-based rewards
 - Access control
 
+```solidity
+// Sample code snippet
+function stake(uint256 amount) external {
+    require(amount > 0, "Cannot stake 0 tokens");
+    require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+    
+    _transfer(msg.sender, address(this), amount);
+    stakingBalance[msg.sender] += amount;
+    stakingTimestamp[msg.sender] = block.timestamp;
+    
+    emit Staked(msg.sender, amount);
+}
+```
+
 ### PortfolioNFT (ERC-721)
 
 A customizable NFT collection with:
@@ -39,6 +53,38 @@ A customizable NFT collection with:
 - Configurable minting price
 - Owner withdrawal function
 
+```solidity
+// Sample code snippet
+function mintNFT(address recipient, string memory tokenURI) public payable returns (uint256) {
+    require(msg.value >= mintPrice, "Insufficient payment");
+    require(_tokenIds.current() < MAX_SUPPLY, "Max supply reached");
+    
+    _tokenIds.increment();
+    uint256 newItemId = _tokenIds.current();
+    _mint(recipient, newItemId);
+    _setTokenURI(newItemId, tokenURI);
+    
+    return newItemId;
+}
+```
+
+## 🖼️ Development Environment
+
+Our development environment features both VS Code for efficient development and Remix IDE for rapid prototyping:
+
+<table>
+  <tr>
+    <td><img src="docs/images/vscode-nft-top.png" alt="VS Code Environment" width="400"/></td>
+    <td><img src="docs/images/remix-deploy.png" alt="Remix Deployment" width="400"/></td>
+  </tr>
+  <tr>
+    <td>VS Code with Solidity extensions</td>
+    <td>Remix IDE deployment interface</td>
+  </tr>
+</table>
+
+For full details on the development environment, see [Development Environment Documentation](docs/development-environment.md).
+
 ## 🛠️ Technology Stack
 
 - **Solidity**: Smart contract language (v0.8.20)
@@ -47,10 +93,6 @@ A customizable NFT collection with:
 - **Ethers.js**: Ethereum interaction library
 - **Waffle/Chai**: Testing framework
 - **TypeScript/JavaScript**: Scripting languages
-
-## 👨‍💻 Development Environment
-
-For details on the development environment, see [Development Environment Documentation](docs/development-environment.md).
 
 ## 🚀 Getting Started
 
@@ -66,11 +108,61 @@ For details on the development environment, see [Development Environment Documen
    ```bash
    git clone https://github.com/mbennett-labs/ethereum-smart-contracts.git
    cd ethereum-smart-contracts
-## Development Process
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Compile contracts
+   ```bash
+   npx hardhat compile
+   ```
+
+4. Run tests
+   ```bash
+   npx hardhat test
+   ```
+
+## 🧪 Testing
+
+The contracts include a comprehensive test suite to ensure functionality and security:
+
+```bash
+# Run all tests
+npx hardhat test
+
+# Run specific test file
+npx hardhat test test/PortfolioNFT.test.js
+```
+
+## 📄 Documentation
 
 This repository includes documentation of the full development workflow:
 
 - [Development Environment Setup](docs/development-environment.md)
 - [Contract Interaction Examples](docs/contract-interaction.md)
 
-![NFT Minting Example](docs/images/remix-nft-minting.svg)
+## 🔄 Deployment
+
+Contracts can be deployed to various networks:
+
+```bash
+# Deploy to local hardhat network
+npx hardhat run scripts/deploy.js
+
+# Deploy to Sepolia testnet
+npx hardhat run scripts/deploy.js --network sepolia
+```
+
+## 🔮 Future Development Plans
+
+- Integration with frontend dApp (React)
+- Additional DeFi mechanics including lending protocols
+- Multi-chain deployment and interaction
+- Gas optimization improvements
+
+## 📜 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
